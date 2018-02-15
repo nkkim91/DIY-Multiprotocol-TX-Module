@@ -6,17 +6,17 @@ Multiprotocol firmware is compiled using the Arduino IDE. The guide below will w
 
 ## Index
 1. [Tools Required](#tools-required)
+   1. [Connecting the Programmer](#connecting-the-programmer)
 1. [Preparation](#preparation)
    1. [Install the Arduino IDE](#install-the-arduino-ide)
    1. [Download the Multiprotocol source and open the project](#download-the-multiprotocol-source-and-open-the-project)
    1. [Install the Multi 4-in-1 board](#install-the-multi-4-in-1-board)
    1. [Configure the Arduino IDE](#configure-the-arduino-ide)
 1. [Configure the firmware](#configure-the-firmware)
-1. [Verify the firmware](#verify-the-firmware)
 1. [Preparing to upload the firmware](#preparing-to-upload-the-firmware)
-   1. [Connect the programmer](#connect-the-programmer)
    1. [Select an upload method](#select-an-upload-method)
    1. [Burn the bootloader](#burn-the-bootloader)
+1. [Verify the firmware](#verify-the-firmware)
 1. [Uploading the firmware](#uploading-the-firmware)
       1. [Flash from TX](#flash-from-tx)
       1. [Upload via USB](#upload-via-usb)
@@ -27,6 +27,7 @@ Multiprotocol firmware is compiled using the Arduino IDE. The guide below will w
 1. [Troubleshooting](#troubleshooting)
 
 ## Tools required
+STM32 boards do not come with a bootloader, meaning that the initial firmware flash or bootloader installation must be done with a USB-TTL adapter.  Once a bootloader is installed the programmer is not necessarily required again.
 
 | **3.3V USB-TTL Adapter** | **4-pin Serial Programming Header** |
 |:---:|:--:|
@@ -42,6 +43,26 @@ The 4-pin header needs to be soldered onto the board as indicated by the red rec
 | <img src="images/Board_PCB_STM32_with_serial.jpg" width="142" height="200"/> | <img src="images/bg-multi-stm32-serial.jpg" width="195" height="200"/> | <img src="images/irx4plus-serial.jpg" width="164" height="200"/> |
 
 **Note:** The Banggood STM32 module most likely already has the header pin in place.
+
+### Connecting the programmer
+It is **strongly** recommended that you power your module from the transmitter when flashing it. This ensures that the module cannot be inadvertently supplied with 5V, which will damage the RF modules. This guide assumes that you will follow that advice, and instructs you to leave the V+ pin on the USB-to-TTL adapter disconnected. You may choose to ignore that advice at your own risk!
+
+The wiring for the USB-to-TTL adapter is:
+* USB-to-TTL TX pin <-> Module RX pin
+* USB-to-TTL RX pin <-> Module TX pin
+* USB-to-TTL GND pin <-> Module GND pin
+* USB-to-TTL VC pin <-> **Not Connected**
+
+**It is critical to ensure that the USB-to-TTL adapter is set to 3.3V**.
+
+| **DIY Multiprotocol Module** | **Banggood 4-in-1 Module** | **iRangeX IRX4 Module** |
+|:---:|:---:|:---:|
+| <img src="images/diy-ch340g.jpg" height="200"/> | <img src="images/bg-stm32-ch340g.jpg" height="200"/> | <img src="images/irx4-ch340g.jpg" height="200"/> |
+
+1. Put the module in the transmitter
+1. Connect the USB-to-TTL adapter to the module as described above
+1. Plug the USB-to-TTL adapter into the PC
+1. In the Arduino IDE click **Tools -> Port** and choose the COM port which matches the USB-to-TTL adapter
 
 ## Preparation
 ### Install the Arduino IDE
@@ -65,24 +86,12 @@ The 4-pin header needs to be soldered onto the board as indicated by the red rec
 The STM32 module has more than enough flash space for all the available protocols so, unlike the Atmega328p-based module, it is not necessary to disable unused protocols.
 
 You can still disable protocols if you wish, and you may also enable or disable other optional Multiprotocol features.
-## Verify the firmware
-To check that the program will compile correctly and fit in the Atmega click **Sketch -> Verify/Compile**, or press **Ctrl+R**.
-
-If there are errors,  carefully read it, go to the line number indicated and correct your typo.
-
-If there are no errors and you see output like this:
-```
-Sketch uses 68564 bytes (52%) of program storage space. Maximum is 131072 bytes.  
-Global variables use 4064 bytes (19%) of dynamic memory, leaving 16416 bytes for local variables. Maximum is 20480 bytes.
-```
-You can proceed to the next step.
 
 ## Preparing to upload the firmware
 If you have already burned the bootloader, and are simply recompiling firmware to re-flash using your TX or USB cable, you can skip this step and go straight to [Flash from TX](#flash-from-tx) or [Upload via USB](#upload-via-usb).
-
 ### Select an Upload Method
 There are three methods to upload firmware to an STM32 module:
-* **Flash from TX** - highly recommended, uses maintenance mode in radios running ersky9x to upload the firmware
+* **Flash from TX** - highly recommended, uses maintenance mode in radios running ersky9x to upload the firmware.  Requires `CHECK_FOR_BOOTLOADER` to be enabled in `_Config.h` or `_MyConfig.h`
 * **Upload via USB** - uses the USB port on the module
 * **Upload via Serial (FTDI)** - uses the serial interface on the module via a USB-to-TTL adapter
 
@@ -93,26 +102,6 @@ There are three methods to upload firmware to an STM32 module:
 1. Under **Tools -> Upload Method** select an upload method
 
 The rest of this process will vary depending on the upload method you selected.
-
-### Connect the programmer
-It is **strongly** recommended that you power your module from the transmitter when flashing it. This ensures that the module cannot be inadvertently supplied with 5V, which will damage the RF modules. This guide assumes that you will follow that advice, and instructs you to leave the V+ pin on the USB-to-TTL adapter disconnected. You may choose to ignore that advice at your own risk!
-
-The wiring for the USB-to-TTL adapter is:
-* USB-to-TTL TX pin <-> Module RX pin
-* USB-to-TTL RX pin <-> Module TX pin
-* USB-to-TTL GND pin <-> Module GND pin
-* USB-to-TTL VC pin <-> **Not Connected**
-
-**It is critical to ensure that the USB-to-TTL adapter is set to 3.3V**.
-
-| **DIY Multiprotocol Module** | **Banggood 4-in-1 Module** | **iRangeX IRX4 Module** |
-|:---:|:---:|:---:|
-| <img src="images/diy-ch340g.jpg" height="200"/> | <img src="images/bg-stm32-ch340g.jpg" height="200"/> | <img src="images/irx4-ch340g.jpg" height="200"/> |
-
-1. Put the module in the transmitter
-1. Connect the USB-to-TTL adapter to the module as described above
-1. Plug the USB-to-TTL adapter into the PC
-1. In the Arduino IDE click **Tools -> Port** and choose the COM port which matches the USB-to-TTL adapter
 
 ### Burn the bootloader
 If you are using **Upload via Serial** you can skip this step and proceed to [Upload via Serial](#upload-via-serial).
@@ -129,6 +118,7 @@ In order to flash the bootloader the **BOOT0** jumper must be installed.  The lo
 | <img src="images/diy-ch340g.jpg" height="200"/> | <img src="images/bg-stm32-boot0.jpg" height="200"/>  | <img src="images/irx4-boot0.jpg" height="200"/>  |
 
 1. Install the **BOOT0** jumper as described above
+1. [Connect the Programmer](#connecting-the-programmer)
 1. Switch on the transmitter
 1. Verify that you have selected the desired upload method under **Tools -> Upload Method**
 1. Verify that you have selected **stm32flash (FTDI)** as the programmer under **Tools -> Programmer**
@@ -170,6 +160,18 @@ Assuming the process is successful:
 1. Remove the **BOOT0** jumper
 1. Disconnect the USB-to-TTL adapter
 
+## Verify the firmware
+To check that the program will compile correctly and fit in the Atmega click **Sketch -> Verify/Compile**, or press **Ctrl+R**.
+
+If there are errors,  carefully read it, go to the line number indicated and correct your typo.
+
+If there are no errors and you see output like this:
+```
+Sketch uses 68564 bytes (52%) of program storage space. Maximum is 131072 bytes.  
+Global variables use 4064 bytes (19%) of dynamic memory, leaving 16416 bytes for local variables. Maximum is 20480 bytes.
+```
+You can proceed to the next step.
+
 ## Uploading the firmware
 Follow the instructions which apply to the **Upload method** you previously selected.
 * [Flash from TX](#flash-from-tx)
@@ -203,7 +205,8 @@ In order for these devices to be correctly identified in Windows it is necessary
 
 1. Connect the USB cable to the Multiprotocol module
 1. Verify that a Maple device appears in Device Manager (**Maple DFU** for a module with only a bootloader, **Maple Serial** for a module with a bootloader and firmware)
-1. In the Arduino IDE click **Sketch -> Upload**, or press **Ctrl+U**
+1. Under **Tools -> Upload Method** select **Upload via USB**
+1. Click **Sketch -> Upload**, or press **Ctrl+U**
 
 You should see output similar to this:
 ```
@@ -245,8 +248,10 @@ Upload via Serial follows the same process as burning the bootloader and uses th
 
 1. Ensure you USB-to-TTL adapter is connected as described in [Connect the programmer](#connect-the-programmer)
 1. Install the **BOOT0** jumper
+1. [Connect the Programmer](#connecting-the-programmer)
 1. Turn on the transmitter
-1. Click **Sketch -> Upload**
+1. Under **Tools -> Upload Method** select an **Upload via Serial (FTDI)**
+1. Click **Sketch -> Upload**, or press **Ctrl+U**
 
 You should see output similar to this:
 ```
