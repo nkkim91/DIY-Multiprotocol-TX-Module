@@ -246,9 +246,8 @@ For subsequent firmware uploads you need only repeat steps 1-3 above, ensuring t
 ## Upload via Serial
 Upload via Serial follows the same process as burning the bootloader and uses the same USB-to-TTL adapter.
 
-1. Ensure you USB-to-TTL adapter is connected as described in [Connect the programmer](#connect-the-programmer)
-1. Install the **BOOT0** jumper
 1. [Connect the Programmer](#connecting-the-programmer)
+1. Install the **BOOT0** jumper (as described in [Burn the bootloader](#burn-the-bootloader))
 1. Turn on the transmitter
 1. Under **Tools -> Upload Method** select an **Upload via Serial (FTDI)**
 1. Click **Sketch -> Upload**, or press **Ctrl+U**
