@@ -188,6 +188,75 @@
 		#define LED_toggle	LED_port ^= _BV(LED_pin)
 		#define LED_output	LED_ddr  |= _BV(LED_pin)
 		#define IS_LED_on	(LED_port & _BV(LED_pin))
+#if 1
+		#define LED2NK_pin		2								//D10 = PB2
+		#define LED2NK_port		PORTB
+		#define LED2NK_ddr 		DDRB
+		#define LED2NK_on		  LED2NK_port |= _BV(LED2NK_pin)
+		#define LED2NK_off 		LED2NK_port &= ~_BV(LED2NK_pin)
+		#define LED2NK_toggle	LED2NK_port ^= _BV(LED2NK_pin)
+		#define LED2NK_output	LED2NK_ddr  |= _BV(LED2NK_pin)
+		#define IS_LED2NK_on	(LED2NK_port & _BV(LED2NK_pin))
+
+		#define LED3NK_pin		3								//D11 = PB3
+		#define LED3NK_port 	PORTB
+		#define LED3NK_ddr		DDRB
+		#define LED3NK_on		  LED3NK_port |= _BV(LED3NK_pin)
+		#define LED3NK_off		LED3NK_port &= ~_BV(LED3NK_pin)
+		#define LED3NK_toggle	LED3NK_port ^= _BV(LED3NK_pin)
+		#define LED3NK_output	LED3NK_ddr	|= _BV(LED3NK_pin)
+		#define IS_LED3NK_on	(LED3NK_port & _BV(LED3NK_pin))
+
+		#define LED4NK_pin		4								//D12 = PB4
+		#define LED4NK_port 	PORTB
+		#define LED4NK_ddr		DDRB
+		#define LED4NK_on		  LED4NK_port |= _BV(LED4NK_pin)
+		#define LED4NK_off		LED4NK_port &= ~_BV(LED4NK_pin)
+		#define LED4NK_toggle	LED4NK_port ^= _BV(LED4NK_pin)
+		#define LED4NK_output	LED4NK_ddr	|= _BV(LED4NK_pin)
+		#define IS_LED4NK_on	(LED4NK_port & _BV(LED4NK_pin))
+
+		#define LED5NK_pin		1								//A1 = PC1
+		#define LED5NK_port	PORTC
+		#define LED5NK_ddr		DDRC
+		#define	LED5NK_output	PE1_ddr  |=  _BV(PE1_pin)
+		#define LED5NK_on		PE1_port |=  _BV(PE1_pin)
+		#define LED5NK_off		PE1_port &= ~_BV(PE1_pin)
+
+		#define LED6NK_pin		2								//A2 = PC2
+		#define LED6NK_port	PORTC
+		#define LED6NK_ddr		DDRC
+		#define	LED6NK_output	PE2_ddr  |=  _BV(PE2_pin)
+		#define LED6NK_on		PE2_port |=  _BV(PE2_pin)
+		#define LED6NK_off		PE2_port &= ~_BV(PE2_pin)
+#else
+		#define LED2NK_pin
+		#define LED2NK_port
+		#define LED2NK_ddr
+		#define LED2NK_on
+		#define LED2NK_off
+		#define LED2NK_toggle
+		#define LED2NK_output
+		#define IS_LED2NK_on	0
+
+		#define LED3NK_pin
+		#define LED3NK_port
+		#define LED3NK_ddr
+		#define LED3NK_on
+		#define LED3NK_off
+		#define LED3NK_toggle
+		#define LED3NK_output
+		#define IS_LED3NK_on	0
+
+		#define LED4NK_pin
+		#define LED4NK_port
+		#define LED4NK_ddr
+		#define LED4NK_on
+		#define LED4NK_off
+		#define LED4NK_toggle
+		#define LED4NK_output
+		#define IS_LED4NK_on	0
+#endif	// LED_NK
 	#endif
 
 	#define	LED2_on
@@ -215,6 +284,19 @@
 	#define	BIND_pin		PA0
 	#define	LED_pin			PA1
 	#define	LED2_pin		PA2
+#if 1
+	#define LED2NK_pin		PA4
+	#define LED3NK_pin		PA5
+	#define LED4NK_pin		PA6
+	#define LED5NK_pin		PA7
+	#define LED6NK_pin		PB8
+#else
+	#define LED2NK_pin
+	#define LED3NK_pin
+	#define LED4NK_pin
+	#define LED5NK_pin
+	#define LED6NK_pin
+#endif	// LED_NK
 	//
 	#define	PPM_pin			PA8								//PPM  5V tolerant
 	//
@@ -298,6 +380,69 @@
 	#define	LED2_output		pinMode(LED2_pin,OUTPUT)
 	#define	IS_LED2_on		( digitalRead(LED2_pin)==HIGH)
 
+#if 1
+	#define LED2NK_on		digitalWrite(LED2NK_pin,HIGH)
+	#define LED2NK_off 		digitalWrite(LED2NK_pin,LOW)
+	#define LED2NK_toggle	digitalWrite(LED2NK_pin ,!digitalRead(LED2NK_pin))
+	#define LED2NK_output	pinMode(LED2NK_pin,OUTPUT)
+	#define IS_LED2NK_on	(digitalRead(LED2NK_pin)==HIGH)
+
+	#define LED3NK_on		digitalWrite(LED3NK_pin,HIGH)
+	#define LED3NK_off		digitalWrite(LED3NK_pin,LOW)
+	#define LED3NK_toggle	digitalWrite(LED3NK_pin ,!digitalRead(LED3NK_pin))
+	#define LED3NK_output	pinMode(LED3NK_pin,OUTPUT)
+	#define IS_LED3NK_on	(digitalRead(LED3NK_pin)==HIGH)
+
+	#define LED4NK_on		digitalWrite(LED4NK_pin,HIGH)
+	#define LED4NK_off		digitalWrite(LED4NK_pin,LOW)
+	#define LED4NK_toggle	digitalWrite(LED4NK_pin ,!digitalRead(LED4NK_pin))
+	#define LED4NK_output	pinMode(LED4NK_pin,OUTPUT)
+	#define IS_LED4NK_on	(digitalRead(LED4NK_pin)==HIGH)
+
+	#define LED5NK_on		digitalWrite(LED5NK_pin,HIGH)
+	#define LED5NK_off		digitalWrite(LED5NK_pin,LOW)
+	#define LED5NK_toggle	digitalWrite(LED5NK_pin ,!digitalRead(LED5NK_pin))
+	#define LED5NK_output	pinMode(LED5NK_pin,OUTPUT)
+	#define IS_LED5NK_on	(digitalRead(LED5NK_pin)==HIGH)
+
+	#define LED6NK_on		digitalWrite(LED6NK_pin,HIGH)
+	#define LED6NK_off		digitalWrite(LED6NK_pin,LOW)
+	#define LED6NK_toggle	digitalWrite(LED6NK_pin ,!digitalRead(LED6NK_pin))
+	#define LED6NK_output	pinMode(LED6NK_pin,OUTPUT)
+	#define IS_LED6NK_on	(digitalRead(LED6NK_pin)==HIGH)
+#else
+	#define LED2NK_on
+	#define LED2NK_off
+	#define LED2NK_toggle
+	#define LED2NK_output
+	#define IS_LED2NK_on	0
+
+	#define LED3NK_on
+	#define LED3NK_off
+	#define LED3NK_toggle
+	#define LED3NK_output
+	#define IS_LED3NK_on	0
+
+	#define LED4NK_on
+	#define LED4NK_off
+	#define LED4NK_toggle
+	#define LED4NK_output
+	#define IS_LED4NK_on	0
+
+	#define LED5NK_on
+	#define LED5NK_off
+	#define LED5NK_toggle
+	#define LED5NK_output
+	#define IS_LED5NK_on	0
+
+	#define LED6NK_on
+	#define LED6NK_off
+	#define LED6NK_toggle
+	#define LED6NK_output
+	#define IS_LED6NK_on	0
+
+#endif	// LED_NK
+
 	#define BIND_SET_INPUT		pinMode(BIND_pin,INPUT)
 	#define BIND_SET_PULLUP		digitalWrite(BIND_pin,HIGH)	
 	#define BIND_SET_OUTPUT		pinMode(BIND_pin,OUTPUT)
@@ -346,7 +491,7 @@
 	#else
 		#define OCF1A_bm _BV(OCF1A)
 		#define OCF1B_bm _BV(OCF1B)
-		#define SET_TIMSK1_OCIE1B	TIMSK1 |= _BV(OCIE1B)
+		#define SET_TIMSK1_OCIE1B	TIMSK1 |= _BV(OCIE1B) // NK - Timer1 Counter B interrupt enabled
 		#define CLR_TIMSK1_OCIE1B	TIMSK1 &=~_BV(OCIE1B)
 	#endif
 #endif

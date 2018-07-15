@@ -78,10 +78,14 @@
 //If a chip is not installed all associated protocols are disabled.
 //4-in-1 modules have all RF chips installed
 //!!!If a RF chip is present it MUST be marked as installed!!! or weird things will happen you have been warned.
-#define A7105_INSTALLED
-#define CYRF6936_INSTALLED
-#define CC2500_INSTALLED
+#if 0
+//#define A7105_INSTALLED
+//#define CYRF6936_INSTALLED
+//#define CC2500_INSTALLED
+//#define NRF24L01_INSTALLED
+#else
 #define NRF24L01_INSTALLED
+#endif
 
 /** OrangeRX TX **/
 //If you compile for the OrangeRX TX module you need to select the correct board type.
@@ -147,48 +151,53 @@
 //Comment the protocols you are not using with "//" to save Flash space.
 
 //The protocols below need an A7105 to be installed
-#define	FLYSKY_A7105_INO
-#define	HUBSAN_A7105_INO
-#define	AFHDS2A_A7105_INO
+#if 0
+//#define	FLYSKY_A7105_INO
+//#define	HUBSAN_A7105_INO
+//#define	AFHDS2A_A7105_INO
 
 //The protocols below need a CYRF6936 to be installed
-#define	DEVO_CYRF6936_INO
-#define	DSM_CYRF6936_INO
-#define	J6PRO_CYRF6936_INO
-#define	WK2x01_CYRF6936_INO
+//#define	DEVO_CYRF6936_INO
+//#define	DSM_CYRF6936_INO
+//#define	J6PRO_CYRF6936_INO
+//#define	WK2x01_CYRF6936_INO
 
 //The protocols below need a CC2500 to be installed
-#define	FRSKYV_CC2500_INO
-#define	FRSKYD_CC2500_INO
-#define	FRSKYX_CC2500_INO
-#define	SFHSS_CC2500_INO
-#define	CORONA_CC2500_INO
+//#define	FRSKYV_CC2500_INO
+//#define	FRSKYD_CC2500_INO
+//#define	FRSKYX_CC2500_INO
+//#define	SFHSS_CC2500_INO
+//#define	CORONA_CC2500_INO
 
 //The protocols below need a NRF24L01 to be installed
-#define	BAYANG_NRF24L01_INO
-#define	CG023_NRF24L01_INO
-#define	CX10_NRF24L01_INO		// Include Q2X2 protocol
-#define	ESKY_NRF24L01_INO
-#define	HISKY_NRF24L01_INO
-#define	KN_NRF24L01_INO
-#define	SLT_NRF24L01_INO
-#define	SYMAX_NRF24L01_INO
-#define	V2X2_NRF24L01_INO
-#define	YD717_NRF24L01_INO
-#define	MT99XX_NRF24L01_INO
-#define	MJXQ_NRF24L01_INO
-#define	SHENQI_NRF24L01_INO
-#define	FY326_NRF24L01_INO
-#define	FQ777_NRF24L01_INO
-#define	ASSAN_NRF24L01_INO
-#define	HONTAI_NRF24L01_INO
-#define	Q303_NRF24L01_INO
-#define	GW008_NRF24L01_INO
-#define	DM002_NRF24L01_INO
-#define	CABELL_NRF24L01_INO
-#define	ESKY150_NRF24L01_INO
-#define	H8_3D_NRF24L01_INO
-#define CFLIE_NRF24L01_INO
+//#define	BAYANG_NRF24L01_INO
+//#define	CG023_NRF24L01_INO
+//#define	CX10_NRF24L01_INO		// Include Q2X2 protocol
+//#define	ESKY_NRF24L01_INO
+//#define	HISKY_NRF24L01_INO
+//#define	KN_NRF24L01_INO
+//#define	SLT_NRF24L01_INO
+//#define	SYMAX_NRF24L01_INO
+//#define	V2X2_NRF24L01_INO
+//#define	YD717_NRF24L01_INO
+//#define	MT99XX_NRF24L01_INO
+//#define	MJXQ_NRF24L01_INO
+//#define	SHENQI_NRF24L01_INO
+//#define	FY326_NRF24L01_INO
+//#define	FQ777_NRF24L01_INO
+//#define	ASSAN_NRF24L01_INO
+//#define	HONTAI_NRF24L01_INO
+//#define	Q303_NRF24L01_INO
+//#define	GW008_NRF24L01_INO
+//#define	DM002_NRF24L01_INO
+//#define	CABELL_NRF24L01_INO
+//#define	ESKY150_NRF24L01_INO
+//#define	H8_3D_NRF24L01_INO
+#else
+#define CX10_NRF24L01_INO
+#define SYMAX_NRF24L01_INO
+#define V2X2_NRF24L01_INO
+#endif
 
 
 /**************************/
@@ -198,7 +207,7 @@
 //  Devo, WK2x01, SFHSS, HISKY/HK310 and AFHDS2A
 //All channels are centered except throttle which is forced low.
 //If you want to diasble failsafe globally comment the line below using "//".
-#define FAILSAFE_ENABLE
+//#define FAILSAFE_ENABLE
 
 //Failsafe throttle low value in percentage.
 //Value between -125% and +125%. Default -100.
@@ -219,7 +228,7 @@
 //In this section you can configure the telemetry.
 
 //If you do not plan using the telemetry comment this global setting using "//" and skip to the next section.
-#define TELEMETRY
+//#define TELEMETRY
 
 //Comment to invert the polarity of the output telemetry serial signal.
 //This function takes quite some flash space and processor power on an atmega.
@@ -227,10 +236,12 @@
 //On a 9XR_PRO running ersky9x both commented and uncommented will work depending on the radio setting Invert COM1 under the Telemetry menu.
 //On other addon/replacement boards like the 9xtreme board or the Ar9x board running ersky9x, you need to uncomment the line below.
 //For er9x it depends if you have an inveter mod or not on the telemetry pin. If you don't have an inverter comment this line.
+// NK - has nothing to do with the normal operation of Symax
 #define INVERT_TELEMETRY
 
 //Comment if you don't want to send Multi status telemetry frames (Protocol available, Bind in progress, version...)
 //Use with er9x/erksy9x, for OpenTX MULTI_TELEMETRY below is preferred instead
+// NK - has nothing to do with the normal operation of Symax
 #define MULTI_STATUS
 
 //Uncomment to send Multi status and allow OpenTX to autodetect the telemetry format
@@ -238,14 +249,14 @@
 //#define MULTI_TELEMETRY
 
 //Comment a line to disable a specific protocol telemetry
-#define DSM_TELEMETRY				// Forward received telemetry packet directly to TX to be decoded
-#define SPORT_TELEMETRY				// Use FrSkyX SPORT format to send telemetry to TX
-#define AFHDS2A_FW_TELEMETRY		// Forward received telemetry packet directly to TX to be decoded
-#define HUB_TELEMETRY				// Use FrSkyD Hub format to send telemetry to TX
-#define AFHDS2A_HUB_TELEMETRY		// Use FrSkyD Hub format to send telemetry to TX
-#define BAYANG_HUB_TELEMETRY		// Use FrSkyD Hub format to send telemetry to TX
-#define HUBSAN_HUB_TELEMETRY		// Use FrSkyD Hub format to send telemetry to TX
-#define CABELL_HUB_TELEMETRY		// Use FrSkyD Hub format to send telemetry to TX
+//#define DSM_TELEMETRY				// Forward received telemetry packet directly to TX to be decoded
+//#define SPORT_TELEMETRY				// Use FrSkyX SPORT format to send telemetry to TX
+//#define AFHDS2A_FW_TELEMETRY		// Forward received telemetry packet directly to TX to be decoded
+//#define HUB_TELEMETRY				// Use FrSkyD Hub format to send telemetry to TX
+//#define AFHDS2A_HUB_TELEMETRY		// Use FrSkyD Hub format to send telemetry to TX
+//#define BAYANG_HUB_TELEMETRY		// Use FrSkyD Hub format to send telemetry to TX
+//#define HUBSAN_HUB_TELEMETRY		// Use FrSkyD Hub format to send telemetry to TX
+//#define CABELL_HUB_TELEMETRY		// Use FrSkyD Hub format to send telemetry to TX
 
 //SPORT_POLLING is an implementation of the same polling routine as XJT module for sport telemetry bidirectional communication.
 //This is useful for passing sport control frames from TX to RX(ex: changing Betaflight PID or VTX channels on the fly using LUA scripts with OpentX).
@@ -270,19 +281,19 @@
 /*************************/
 //In this section you can configure all details about PPM.
 //If you do not plan to use the PPM mode comment this line using "//" to save Flash space, you don't need to configure anything below in this case
-#define ENABLE_PPM
+//#define ENABLE_PPM
 
 /** TX END POINTS **/
 //It is important for the module to know the endpoints of your radio.
 //Below are some standard transmitters already preconfigured.
 //Uncomment only the one which matches your transmitter.
-#define TX_ER9X			//ER9X/ERSKY9X/OpenTX	( 988<->2012 microseconds)
+//#define TX_ER9X			//ER9X/ERSKY9X/OpenTX	( 988<->2012 microseconds)
 //#define TX_DEVO7		//DEVO					(1120<->1920 microseconds)
 //#define TX_SPEKTRUM	//Spektrum				(1100<->1900 microseconds)
 //#define TX_HISKY		//HISKY					(1120<->1920 microseconds)
 //#define TX_MPX		//Multiplex MC2020		(1250<->1950 microseconds)
 //#define TX_WALKERA	//Walkera PL0811-01H	(1000<->1800 microseconds)
-//#define TX_CUSTOM		//Custom
+#define TX_CUSTOM		//Custom
 
 // The lines below are used to set the end points in microseconds if you have selected TX_CUSTOM.
 // A few things to consider:
@@ -558,6 +569,7 @@ const PPM_Parameters PPM_prot[14*NBR_BANKS]=	{
 // For protocols which does not require binding at each power up (like Flysky, FrSky...), you might still want a bind to be initiated each time you power up the TX.
 // As an example, it's usefull for the WLTOYS F929/F939/F949/F959 (all using the Flysky protocol) which requires a bind at each power up.
 // It also enables the Bind from channel feature, allowing to execute a bind by toggling a designated channel.
+#define AUTOBIND
 
 // Option: the value is between -128 and +127.
 // The option value is only valid for some protocols, read this page for more information: https://github.com/pascallanger/DIY-Multiprotocol-TX-Module/blob/master/Protocols_Details.md

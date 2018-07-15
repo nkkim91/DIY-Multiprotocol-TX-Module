@@ -23,7 +23,7 @@
 #include <avr/pgmspace.h>
 
 //#define DEBUG_PIN		// Use pin TX for AVR and SPI_CS for STM32 => DEBUG_PIN_on, DEBUG_PIN_off, DEBUG_PIN_toggle
-// #define DEBUG_SERIAL	// Only for STM32_BOARD compiled with Upload method "Serial"->usart1, "STM32duino bootloader"->USB serial
+#define DEBUG_SERIAL	// Only for STM32_BOARD compiled with Upload method "Serial"->usart1, "STM32duino bootloader"->USB serial
 
 #ifdef __arm__			// Let's automatically select the board if arm is selected
 	#define STM32_BOARD
@@ -215,11 +215,19 @@ void_function_t remote_callback = 0;
 // Init
 void setup()
 {
+	int i;
+
 	// Setup diagnostic uart before anything else
 	#ifdef DEBUG_SERIAL
+    #if defined(ARDUINO_AVR_PRO) || defined(ARDUINO_AVR_MINI) || defined(ARDUINO_AVR_NANO)
+        SerialSoft.begin(115200);
+        while (!SerialSoft); // Wait for ever for the serial port to connect...
+        debugln("Multiprotocol version: %d.%d.%d.%d", VERSION_MAJOR, VERSION_MINOR, VERSION_REVISION, VERSION_PATCH_LEVEL);
+    #else
 		Serial.begin(115200,SERIAL_8N1);
 		while (!Serial); // Wait for ever for the serial port to connect...
 		debugln("Multiprotocol version: %d.%d.%d.%d", VERSION_MAJOR, VERSION_MINOR, VERSION_REVISION, VERSION_PATCH_LEVEL);
+	#endif
 	#endif
 
 	// General pinout
@@ -265,10 +273,12 @@ void setup()
 		#endif
 		pinMode(BIND_pin,INPUT_PULLUP);
 		pinMode(PPM_pin,INPUT);
+#if 0	/* NK - use for LED instead of dial switch */
 		pinMode(S1_pin,INPUT_PULLUP);//dial switch
 		pinMode(S2_pin,INPUT_PULLUP);
 		pinMode(S3_pin,INPUT_PULLUP);
 		pinMode(S4_pin,INPUT_PULLUP);
+#endif
 		//Random pins
 		pinMode(PB0, INPUT_ANALOG); // set up pin for analog input
 		pinMode(PB1, INPUT_ANALOG); // set up pin for analog input
@@ -278,10 +288,10 @@ void setup()
 	#else
 		//ATMEGA328p
 		// all inputs
-		DDRB=0x00;DDRC=0x00;DDRD=0x00;
+		DDRB=0x00;DDRC=0x00;DDRD=0x00;  // NK - DDRB = _SRF_IO8(0x4), DDRC = _SRF_IO8(0x7), DDRD = _SRF_IO8(0x0A), _SRF_IO8(x) = (x + __SRF_OFFSET(0x20))
 		// outputs
-		SDI_output;
-		SCLK_output;
+		SDI_output;	// NK - PD5 output for SDIO ?
+		SCLK_output;	// NK - What is this pin for ?
 		#ifdef A7105_CSN_pin
 			A7105_CSN_output;
 		#endif
@@ -293,22 +303,28 @@ void setup()
 			CYRF_CSN_output;
 		#endif
 		#ifdef NRF_CSN_pin
-			NRF_CSN_output;
+			NRF_CSN_output;	// NK - D8 = PB0
 		#endif
 		PE1_output;
 		PE2_output;
 		SERIAL_TX_output;
 
 		// pullups
+#if 0	// NK
 		PROTO_DIAL1_port |= _BV(PROTO_DIAL1_pin);
 		PROTO_DIAL2_port |= _BV(PROTO_DIAL2_pin);
 		PROTO_DIAL3_port |= _BV(PROTO_DIAL3_pin);
 		PROTO_DIAL4_port |= _BV(PROTO_DIAL4_pin);
+#endif
 		BIND_port |= _BV(BIND_pin);
 
 		// Timer1 config
 		TCCR1A = 0;
+#if 1 /* NK - Default */
 		TCCR1B = (1 << CS11);	//prescaler8, set timer1 to increment every 0.5us(16Mhz) and start timer
+#else
+    TCCR1B = (1 << CS11 | 1 << CS10); //prescaler64, set timer1 to increment every 4us(16Mhz) and start timer
+#endif
 
 		// Random
 		random_init();
@@ -343,11 +359,14 @@ void setup()
 	// Read status of bind button
 	if( IS_BIND_BUTTON_on )
 	{
+		debugln("Binding Button On");
 		BIND_BUTTON_FLAG_on;	// If bind button pressed save the status
 		BIND_IN_PROGRESS;		// Request bind
 	}
-	else
+	else {
+		debugln("Binding Button Off (Autobind ?)");
 		BIND_DONE;
+	}
 
 	// Read status of mode select binary switch
 	// after this mode_select will be one of {0000, 0001, ..., 1111}
@@ -355,12 +374,18 @@ void setup()
 		mode_select = MODE_SERIAL ;	// force serial mode
 	#elif defined STM32_BOARD
 		mode_select= 0x0F -(uint8_t)(((GPIOA->regs->IDR)>>4)&0x0F);
+#if 1
+		mode_select = PROTO_SYMAX;	//
+#endif
 	#else
 		mode_select =
 			((PROTO_DIAL1_ipr & _BV(PROTO_DIAL1_pin)) ? 0 : 1) + 
 			((PROTO_DIAL2_ipr & _BV(PROTO_DIAL2_pin)) ? 0 : 2) +
 			((PROTO_DIAL3_ipr & _BV(PROTO_DIAL3_pin)) ? 0 : 4) +
 			((PROTO_DIAL4_ipr & _BV(PROTO_DIAL4_pin)) ? 0 : 8);
+#if 1
+		mode_select = PROTO_SYMAX;	//
+#endif
 	#endif
 	//mode_select=1;
     debugln("Protocol selection switch reads as %d", mode_select);
@@ -378,6 +403,47 @@ void setup()
 	// Update LED
 	LED_off;
 	LED_output;
+#if 1	// NK
+	LED2NK_off;
+	LED3NK_off;
+	LED4NK_off;
+	LED5NK_off;
+	LED6NK_off;
+
+	LED2NK_output;
+	LED3NK_output;
+	LED4NK_output;
+	LED5NK_output;
+	LED6NK_output;
+
+	for(i = 0 ; i < 15; i++ ) {	// 3 sec (200 ms * 15)
+		switch(i % 6) {
+			case 0 :
+				LED2NK_on; break;
+			case 1 :
+				LED3NK_on; break;
+			case 2 :
+				LED4NK_on; break;
+			case 3 :
+				LED5NK_on; break;
+			case 4 :
+				LED6NK_on; break;
+			case 5 :
+				LED2NK_off;
+				LED3NK_off;
+				LED4NK_off;
+				LED5NK_off;
+				LED6NK_off;
+				break;
+		}
+		delayMicroseconds(10000);
+	}
+  LED2NK_off;
+  LED3NK_off;
+  LED4NK_off;
+  LED5NK_off;
+  LED6NK_off;
+#endif
 
 	//Init RF modules
 	modules_reset();
@@ -576,6 +642,14 @@ uint8_t Update_All()
 		#endif
 		if(mode_select==MODE_SERIAL && IS_RX_FLAG_on)		// Serial mode and something has been received
 		{
+#if 1
+			debug("rx_ok_buff :");
+
+			for(uint8_t i = 0; i < RXBUFFER_SIZE; i++) {
+				debug(" 0x%02x", rx_ok_buff[i]);
+			}
+			debugln("");
+#endif
 			update_serial_data();							// Update protocol and data
 			update_channels_aux();
 			INPUT_SIGNAL_on;								//valid signal received
@@ -1189,6 +1263,9 @@ static void protocol_init()
 
 void update_serial_data()
 {
+#if 1
+	LED2NK_off;
+#endif
 	RX_DONOTUPDATE_on;
 	RX_FLAG_off;								//data is being processed
 	if(rx_ok_buff[1]&0x20)						//check range
@@ -1391,21 +1468,43 @@ void modules_reset()
 			USART3_BASE->CR1 &= ~ USART_CR1_RE;	//disable receive
 		#endif		
 		USART2_BASE->CR1 &= ~ USART_CR1_TE;		//disable transmit
+		debugln("## NK - Initialized USART2 & USART3 at 100000 bps, 8E2");
 	#else
 		//ATMEGA328p
 		#include <util/setbaud.h>	
-		UBRR0H = UBRRH_VALUE;
+#if 1
+		UBRR0H = UBRRH_VALUE;	// NK - UBRR = FOSC/16/BAUD-1, ex) FOSC 1843200 (Clock Speed), BAUD=9600 ==> 11, BAUD=115200 ==> 0
 		UBRR0L = UBRRL_VALUE;
+#else
+	    UBRR0H = 0;
+	    UBRR0L = 16;   // 9 -> 100000 bps, 7 -> 115200 bps (?), 16 -> 57600 bps (?)
+#endif
 		UCSR0A = 0 ;	// Clear X2 bit
+#if 1
 		//Set frame format to 8 data bits, even parity, 2 stop bits
 		UCSR0C = _BV(UPM01)|_BV(USBS0)|_BV(UCSZ01)|_BV(UCSZ00);
+#else
+		//Set frame format to 8 data bits, even parity, 2 stop bits
+		UCSR0C = _BV(UCSZ01)|_BV(UCSZ00);
+#endif
 		while ( UCSR0A & (1 << RXC0) )	//flush receive buffer
 			UDR0;
 		//enable reception and RC complete interrupt
 		UCSR0B = _BV(RXEN0)|_BV(RXCIE0);//rx enable and interrupt
+#if 1 /* NK */
+//    debugln("FOSC        : %lu", FOSC);
+	    debugln("BAUD        : %lu", BAUD);
+	    debugln("TCCR1A      : 0x%x", TCCR1A);
+	    debugln("TCCR1B      : 0x%x", TCCR1B);
+	    debugln("UBRR0H      : 0x%x, UBRR0L : 0x%x", UBRR0H, UBRR0L);
+	    debugln("UCSR0A      : 0x%x", UCSR0A);
+	    debugln("UCSR0B      : 0x%x", UCSR0B);
+	    debugln("UCSR0C      : 0x%x", UCSR0C);
+	    debugln("F_CPU       : %ld", F_CPU);
+#endif
 		#ifndef DEBUG_PIN
 			#if defined(TELEMETRY)
-				initTXSerial( SPEED_100K ) ;
+				initTXSerial( SPEED_100K ) ;  // NK - SPEED_100K(Default), SPEED_57600
 			#endif //TELEMETRY
 		#endif //DEBUG_PIN
 		#ifdef CHECK_FOR_BOOTLOADER
@@ -1658,6 +1757,10 @@ static uint32_t random_id(uint16_t address, uint8_t create_new)
 	#endif
 	{	// RX interrupt
 		static uint8_t idx=0;
+#if 1
+		LED4NK_off;	// Bad frame RX
+		LED5NK_on;	// RX IRQ
+#endif
 		#ifdef ORANGE_TX
 			if((USARTC0.STATUS & 0x1C)==0)		// Check frame error, data overrun and parity error
 		#elif defined STM32_BOARD
@@ -1668,11 +1771,20 @@ static uint32_t random_id(uint16_t address, uint8_t create_new)
 			if((UCSR0A&0x1C)==0)				// Check frame error, data overrun and parity error
 		#endif
 		{ // received byte is ok to process
+#if 1
+			LED3NK_off;
+#endif
 			if(idx==0||discard_frame==1)
 			{	// Let's try to sync at this point
+#if 1
+				LED5NK_on;
+#endif
 				idx=0;discard_frame=0;
 				RX_MISSED_BUFF_off;			// If rx_buff was good it's not anymore...
 				rx_buff[0]=UDR0;
+#if 0	// NK
+				debug("0x%02x ", rx_buff[0]);
+#endif
 				#ifdef FAILSAFE_ENABLE
 					if((rx_buff[0]&0xFC)==0x54)	// If 1st byte is 0x54, 0x55, 0x56 or 0x57 it looks ok
 				#else
@@ -1696,15 +1808,22 @@ static uint32_t random_id(uint16_t address, uint8_t create_new)
 			else
 			{
 				rx_buff[idx++]=UDR0;		// Store received byte
+#if 1
+				LED5NK_off;
+#endif
 				if(idx>=RXBUFFER_SIZE)
 				{	// A full frame has been received
 					if(!IS_RX_DONOTUPDATE_on)
 					{ //Good frame received and main is not working on the buffer
 						memcpy((void*)rx_ok_buff,(const void*)rx_buff,RXBUFFER_SIZE);// Duplicate the buffer
+#if 1
+						LED2NK_on;
+#endif
 						RX_FLAG_on;			// flag for main to process servo data
 					}
-					else
+					else {
 						RX_MISSED_BUFF_on;	// notify that rx_buff is good
+					}
 					discard_frame=1; 		// start again
 				}
 			}
@@ -1714,6 +1833,9 @@ static uint32_t random_id(uint16_t address, uint8_t create_new)
 			idx=UDR0;						// Dummy read
 			discard_frame=1;				// Error encountered discard full frame...
 			debugln("Bad frame RX");
+#if 1
+			LED4NK_on;
+#endif
 		}
 		if(discard_frame==1)
 		{
@@ -1729,6 +1851,9 @@ static uint32_t random_id(uint16_t address, uint8_t create_new)
 			cli() ;
 			UCSR0B |= _BV(RXCIE0) ;			// RX interrupt enable
 		#endif
+#if 1
+		LED5NK_off;	// RX IRQ end
+#endif
 	}
 
 	//Serial timer
@@ -1740,12 +1865,18 @@ static uint32_t random_id(uint16_t address, uint8_t create_new)
 		ISR(TIMER1_COMPB_vect, ISR_NOBLOCK )
 	#endif
 	{	// Timer1 compare B interrupt
+#if 1
+		LED3NK_on;
+#endif
 		discard_frame=1;
 		#ifdef STM32_BOARD
 			TIMER2_BASE->DIER &= ~TIMER_DIER_CC2IE;	// Disable Timer2/Comp2 interrupt
 			debugln("Bad frame timer");
 		#else
 			CLR_TIMSK1_OCIE1B;						// Disable interrupt on compare B match
+#if 0	// NK
+			debugln("Bad frame timer");				// NK
+#endif
 		#endif
 		tx_resume();
 	}
