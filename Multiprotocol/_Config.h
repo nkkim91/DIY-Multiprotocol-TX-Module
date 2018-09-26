@@ -370,7 +370,7 @@ const PPM_Parameters PPM_prot[14*NBR_BANKS]=	{
 /*	2	*/	{PROTO_ESKY150,	0			,	0	,	P_HIGH	,	NO_AUTOBIND	,	0		},
 /*	3	*/	{PROTO_ASSAN,	0			,	0	,	P_HIGH	,	NO_AUTOBIND	,	0		},
 /*	4	*/	{PROTO_CORONA,	COR_V2		,	0	,	P_HIGH	,	NO_AUTOBIND	,	0		},
-/*	5	*/	{PROTO_SYMAX	,	SYMAX		,	0	,	P_HIGH	,	NO_AUTOBIND	,	0		},
+/*	5	*/	{PROTO_SYMAX,	SYMAX		,	0	,	P_HIGH	,	NO_AUTOBIND	,	0		},
 /*	6	*/	{PROTO_KN	,	WLTOYS		,	0	,	P_HIGH	,	NO_AUTOBIND	,	0		},
 /*	7	*/	{PROTO_BAYANG,	BAYANG		,	0	,	P_HIGH	,	NO_AUTOBIND	,	0		},
 /*	8	*/	{PROTO_BAYANG,	H8S3D		,	0	,	P_HIGH	,	NO_AUTOBIND	,	0		},

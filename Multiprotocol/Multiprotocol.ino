@@ -224,9 +224,9 @@ void setup()
         while (!SerialSoft); // Wait for ever for the serial port to connect...
         debugln("Multiprotocol version: %d.%d.%d.%d", VERSION_MAJOR, VERSION_MINOR, VERSION_REVISION, VERSION_PATCH_LEVEL);
     #else
-		Serial.begin(115200,SERIAL_8N1);
-		while (!Serial); // Wait for ever for the serial port to connect...
-		debugln("Multiprotocol version: %d.%d.%d.%d", VERSION_MAJOR, VERSION_MINOR, VERSION_REVISION, VERSION_PATCH_LEVEL);
+	Serial.begin(115200,SERIAL_8N1);
+	while (!Serial); // Wait for ever for the serial port to connect...
+	debugln("Multiprotocol version: %d.%d.%d.%d", VERSION_MAJOR, VERSION_MINOR, VERSION_REVISION, VERSION_PATCH_LEVEL);
 	#endif
 	#endif
 
@@ -321,7 +321,7 @@ void setup()
 		// Timer1 config
 		TCCR1A = 0;
 #if 1 /* NK - Default */
-		TCCR1B = (1 << CS11);	//prescaler8, set timer1 to increment every 0.5us(16Mhz) and start timer
+		TCCR1B = (1 << CS11); //prescaler8, set timer1 to increment every 0.5us(16Mhz) and start timer
 #else
     TCCR1B = (1 << CS11 | 1 << CS10); //prescaler64, set timer1 to increment every 4us(16Mhz) and start timer
 #endif
@@ -642,8 +642,8 @@ uint8_t Update_All()
 		#endif
 		if(mode_select==MODE_SERIAL && IS_RX_FLAG_on)		// Serial mode and something has been received
 		{
-#if 1
-			debug("rx_ok_buff :");
+#if 1 // NK
+			debug("rx_ok_buff : ");
 
 			for(uint8_t i = 0; i < RXBUFFER_SIZE; i++) {
 				debug(" 0x%02x", rx_ok_buff[i]);
@@ -1263,7 +1263,7 @@ static void protocol_init()
 
 void update_serial_data()
 {
-#if 1
+#if 1	// NK
 	LED2NK_off;
 #endif
 	RX_DONOTUPDATE_on;
@@ -1472,7 +1472,7 @@ void modules_reset()
 	#else
 		//ATMEGA328p
 		#include <util/setbaud.h>	
-#if 1
+#if 1	/* NK */
 		UBRR0H = UBRRH_VALUE;	// NK - UBRR = FOSC/16/BAUD-1, ex) FOSC 1843200 (Clock Speed), BAUD=9600 ==> 11, BAUD=115200 ==> 0
 		UBRR0L = UBRRL_VALUE;
 #else
@@ -1480,7 +1480,7 @@ void modules_reset()
 	    UBRR0L = 16;   // 9 -> 100000 bps, 7 -> 115200 bps (?), 16 -> 57600 bps (?)
 #endif
 		UCSR0A = 0 ;	// Clear X2 bit
-#if 1
+#if 1	/* NK */
 		//Set frame format to 8 data bits, even parity, 2 stop bits
 		UCSR0C = _BV(UPM01)|_BV(USBS0)|_BV(UCSZ01)|_BV(UCSZ00);
 #else
@@ -1504,7 +1504,7 @@ void modules_reset()
 #endif
 		#ifndef DEBUG_PIN
 			#if defined(TELEMETRY)
-				initTXSerial( SPEED_100K ) ;  // NK - SPEED_100K(Default), SPEED_57600
+				initTXSerial( SPEED_100K );
 			#endif //TELEMETRY
 		#endif //DEBUG_PIN
 		#ifdef CHECK_FOR_BOOTLOADER
@@ -1757,7 +1757,7 @@ static uint32_t random_id(uint16_t address, uint8_t create_new)
 	#endif
 	{	// RX interrupt
 		static uint8_t idx=0;
-#if 1
+#if 1	/* NK */
 		LED4NK_off;	// Bad frame RX
 		LED5NK_on;	// RX IRQ
 #endif
@@ -1771,12 +1771,12 @@ static uint32_t random_id(uint16_t address, uint8_t create_new)
 			if((UCSR0A&0x1C)==0)				// Check frame error, data overrun and parity error
 		#endif
 		{ // received byte is ok to process
-#if 1
+#if 1	/* NK */
 			LED3NK_off;
 #endif
 			if(idx==0||discard_frame==1)
 			{	// Let's try to sync at this point
-#if 1
+#if 1	/* NK */
 				LED5NK_on;
 #endif
 				idx=0;discard_frame=0;
@@ -1808,7 +1808,7 @@ static uint32_t random_id(uint16_t address, uint8_t create_new)
 			else
 			{
 				rx_buff[idx++]=UDR0;		// Store received byte
-#if 1
+#if 1	/* NK */
 				LED5NK_off;
 #endif
 				if(idx>=RXBUFFER_SIZE)
@@ -1816,7 +1816,7 @@ static uint32_t random_id(uint16_t address, uint8_t create_new)
 					if(!IS_RX_DONOTUPDATE_on)
 					{ //Good frame received and main is not working on the buffer
 						memcpy((void*)rx_ok_buff,(const void*)rx_buff,RXBUFFER_SIZE);// Duplicate the buffer
-#if 1
+#if 1	/* NK */
 						LED2NK_on;
 #endif
 						RX_FLAG_on;			// flag for main to process servo data
@@ -1833,7 +1833,7 @@ static uint32_t random_id(uint16_t address, uint8_t create_new)
 			idx=UDR0;						// Dummy read
 			discard_frame=1;				// Error encountered discard full frame...
 			debugln("Bad frame RX");
-#if 1
+#if 1	/* NK */
 			LED4NK_on;
 #endif
 		}
@@ -1851,7 +1851,7 @@ static uint32_t random_id(uint16_t address, uint8_t create_new)
 			cli() ;
 			UCSR0B |= _BV(RXCIE0) ;			// RX interrupt enable
 		#endif
-#if 1
+#if 1	/* NK */
 		LED5NK_off;	// RX IRQ end
 #endif
 	}
@@ -1865,7 +1865,7 @@ static uint32_t random_id(uint16_t address, uint8_t create_new)
 		ISR(TIMER1_COMPB_vect, ISR_NOBLOCK )
 	#endif
 	{	// Timer1 compare B interrupt
-#if 1
+#if 1	/* NK */
 		LED3NK_on;
 #endif
 		discard_frame=1;
